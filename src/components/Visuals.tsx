@@ -71,7 +71,7 @@ export default function Visuals() {
                   muted
                   loop
                   playsInline
-                  preload="none"
+                  preload="metadata"
                   onMouseEnter={e => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
                   onMouseLeave={e => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
                 />

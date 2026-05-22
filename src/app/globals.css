@@ -504,7 +504,7 @@ main.home #work.work-preview {
 .vis-item { position: relative; overflow: hidden; background: #1a1a1a; aspect-ratio: 16/9; }
 .vis-item.wide { grid-column: span 2; }
 .vis-item video, .vis-item img {
-  width: 100%; height: 100%; object-fit: contain;
+  width: 100%; height: 100%; object-fit: cover;
   transition: transform .6s, filter .4s;
   filter: saturate(0.7);
 }
@@ -747,11 +747,9 @@ footer { background: #080808; border-top: 1px solid rgba(240,237,232,0.07); over
 }
 @media (max-width: 600px) {
   .hero-headline { font-size: clamp(52px,18vw,100px); }
-  .graphics-grid { grid-template-columns: repeat(2,1fr); }
-  .shoots-strip { grid-template-columns: 1fr; }
-  .visuals-grid { grid-template-columns: repeat(4,1fr); }
-  .vis-item.wide { grid-column: span 4; }
-  .vis-item.medium, .vis-item.small { grid-column: span 2; }
+  .graphics-grid { columns: 2; }
+  .visuals-grid { grid-template-columns: 1fr; }
+  .vis-item.wide { grid-column: span 1; }
   .project-gallery { grid-template-columns: 1fr; }
   .project-gallery-item.full { grid-column: span 1; }
 }
