@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# media assets (large binaries — deploy via Vercel or host separately)
+/public/media/
+/public/devbyfree/
