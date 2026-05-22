@@ -48,7 +48,7 @@ export default function Graphics() {
         <div className="graphics-grid">
           {posters.map(p => (
             <div key={p.src} className="graphic-card">
-              <Image src={p.src} alt={p.label} fill style={{ objectFit: 'cover' }} />
+              <Image src={p.src} alt={p.label} width={1080} height={1350} style={{ width: '100%', height: 'auto', display: 'block' }} />
               <div className="graphic-card-label"><span>{p.label}</span></div>
             </div>
           ))}

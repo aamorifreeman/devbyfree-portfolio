@@ -526,9 +526,9 @@ main.home #work.work-preview {
   color: rgba(240,237,232,0.3);
   margin-bottom: 40px; margin-top: -40px;
 }
-.graphics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-bottom: 80px; }
-.graphic-card { position: relative; overflow: hidden; aspect-ratio: 3/4; background: #1a1a1a; cursor: none; }
-.graphic-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s, filter .4s; filter: saturate(0.85); }
+.graphics-grid { columns: 3; column-gap: 3px; margin-bottom: 80px; }
+.graphic-card { position: relative; overflow: hidden; background: #1a1a1a; cursor: none; break-inside: avoid; margin-bottom: 3px; display: block; }
+.graphic-card img { width: 100%; height: auto; display: block; transition: transform .5s, filter .4s; filter: saturate(0.85); }
 .graphic-card:hover img { transform: scale(1.07); filter: saturate(1); }
 .graphic-card-label {
   position: absolute; inset: 0;
@@ -720,7 +720,7 @@ footer { background: #080808; border-top: 1px solid rgba(240,237,232,0.07); over
   .visuals-grid { grid-template-columns: 1fr; }
   .vis-item.wide { grid-column: span 1; }
   #graphics { padding: 80px 24px 80px; }
-  .graphics-grid { grid-template-columns: repeat(2, 1fr); }
+  .graphics-grid { columns: 2; }
   .shoots-strip { grid-template-columns: repeat(2,1fr); }
   #contact { padding: 100px 24px 80px; }
   .contact-body { grid-template-columns: 1fr; gap: 32px; }
