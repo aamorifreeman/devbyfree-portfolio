@@ -48,7 +48,7 @@ export default function Graphics() {
         <div className="graphics-grid">
           {posters.map(p => (
             <div key={p.src} className="graphic-card">
-              <Image src={p.src} alt={p.label} width={1080} height={1350} style={{ width: '100%', height: 'auto', display: 'block' }} />
+              <Image src={p.src} alt={p.label} fill style={{ objectFit: 'cover' }} />
               <div className="graphic-card-label"><span>{p.label}</span></div>
             </div>
           ))}
@@ -60,7 +60,7 @@ export default function Graphics() {
         <div className="shoots-strip">
           {shoots.map(s => (
             <div key={s.src} className="shoot-item">
-              <Image src={s.src} alt={s.label} fill style={{ objectFit: 'contain' }} />
+              <Image src={s.src} alt={s.label} fill style={{ objectFit: 'cover' }} />
             </div>
           ))}
         </div>
