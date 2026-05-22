@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import projects, { getProjectBySlug } from '@/data/projects';
+import projects, { getProjectBySlug, getProjectCarouselMedia, getFeaturedProjects } from '@/data/projects';
 import Marquee from '@/components/Marquee';
 import Footer from '@/components/Footer';
 import Reveal from '@/components/Reveal';
+import ProjectHeaderCarousel from '@/components/ProjectHeaderCarousel';
 
 export function generateStaticParams() {
   return projects.map(p => ({ slug: p.slug }));
@@ -21,16 +22,21 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const project = getProjectBySlug(slug);
   if (!project) notFound();
 
-  const currentIndex = projects.findIndex(p => p.slug === slug);
-  const prev = projects[currentIndex - 1];
-  const next = projects[currentIndex + 1];
+  const featured = getFeaturedProjects();
+  const featuredIndex = featured.findIndex(p => p.slug === slug);
+  const next =
+    featured.length > 1 && featuredIndex >= 0
+      ? featured[(featuredIndex + 1) % featured.length]
+      : featured.length > 0 && featuredIndex < 0
+        ? featured[0]
+        : undefined;
 
   return (
     <>
       <main className="project-detail">
         {/* Back / Next navigation */}
         <div className="project-nav">
-          <Link href="/" className="project-nav-link">← Back to work</Link>
+          <Link href="/work" className="project-nav-link">← Back to work</Link>
           {next && (
             <Link href={`/projects/${next.slug}`} className="project-nav-link">
               {next.title} →
@@ -41,19 +47,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         {/* Header */}
         <Reveal>
           <div className="project-header">
-            <div className="project-cat-year">{project.category} — {project.year}</div>
-            <h1 className="project-big-title t-display">{project.title}</h1>
+            <ProjectHeaderCarousel media={getProjectCarouselMedia(project)} />
+            <div className="project-header-content">
+              <div className="project-cat-year">{project.category} — {project.year}</div>
+              <h1 className="project-big-title t-display">{project.title}</h1>
+            </div>
           </div>
         </Reveal>
-
-        {/* Hero media */}
-        <div className="project-hero-media">
-          {project.heroType === 'video' ? (
-            <video src={project.heroMedia} autoPlay muted loop playsInline poster={project.poster} />
-          ) : (
-            <Image src={project.heroMedia} alt={project.title} fill style={{ objectFit: 'cover' }} />
-          )}
-        </div>
 
         {/* Description + tags */}
         <Reveal>
@@ -68,51 +68,69 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           </div>
         </Reveal>
 
-        {/* Gallery */}
-        {project.gallery.length > 0 && (
-          <Reveal>
-            <div className="project-gallery">
-              {project.gallery.map((item, i) => (
-                <div
-                  key={i}
-                  className={`project-gallery-item${i === 0 && project.gallery.length > 2 ? ' full' : ''}`}
-                >
-                  {item.type === 'video' ? (
-                    <video src={item.src} autoPlay muted loop playsInline />
-                  ) : (
-                    <Image src={item.src} alt={item.caption ?? ''} fill style={{ objectFit: 'cover' }} />
-                  )}
-                  {item.caption && (
-                    <div className="project-gallery-caption">{item.caption}</div>
-                  )}
-                </div>
-              ))}
+        {/* Hero + gallery */}
+        <Reveal>
+          <div className="project-gallery">
+            <div className={`project-gallery-item${project.gallery.length === 0 ? ' full' : ''}`}>
+              {project.heroType === 'video' ? (
+                <video
+                  src={project.heroMedia}
+                  controls
+                  autoPlay
+                  muted
+                  playsInline
+                  preload="metadata"
+                  poster={project.poster}
+                  className="project-gallery-video"
+                />
+              ) : (
+                <Image src={project.heroMedia} alt={project.title} width={1080} height={1350} style={{ width: '100%', height: 'auto', display: 'block' }} />
+              )}
             </div>
-          </Reveal>
-        )}
+            {project.gallery.map((item, i) => (
+              <div key={i} className="project-gallery-item">
+                {item.type === 'video' ? (
+                  <video
+                    src={item.src}
+                    controls
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="project-gallery-video"
+                  />
+                ) : (
+                  <Image src={item.src} alt={item.caption ?? ''} width={1080} height={1350} style={{ width: '100%', height: 'auto', display: 'block' }} />
+                )}
+                {item.caption && (
+                  <div className="project-gallery-caption">{item.caption}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </Reveal>
 
         {/* More work marquee */}
         <Marquee items={['More Work', 'View Projects', 'Dev By Free', 'Aamori Freeman']} />
-        <div style={{ padding: '60px 40px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+        <div className="project-more-work">
           {projects.filter(p => p.slug !== slug).slice(0, 3).map(p => (
             <Link
               key={p.slug}
               href={`/projects/${p.slug}`}
-              style={{ textDecoration: 'none', flex: '1 1 260px' }}
+              className="film-card"
+              style={{ textDecoration: 'none' }}
             >
-              <div className="film-card" style={{ width: '100%' }}>
-                <div className="film-card-media">
-                  {p.heroType === 'video' ? (
-                    <video src={p.heroMedia} muted playsInline preload="none" poster={p.poster} />
-                  ) : (
-                    <Image src={p.heroMedia} alt={p.title} fill style={{ objectFit: 'cover' }} />
-                  )}
-                  <div className="film-card-overlay"><span className="film-card-arrow">↗</span></div>
-                </div>
-                <div className="film-card-info">
-                  <div className="film-card-cat">{p.category}</div>
-                  <div className="film-card-title">{p.title}</div>
-                </div>
+              <div className="film-card-media">
+                {p.heroType === 'video' ? (
+                  <video src={p.heroMedia} muted playsInline preload="none" poster={p.poster} />
+                ) : (
+                  <Image src={p.heroMedia} alt={p.title} fill style={{ objectFit: 'contain' }} />
+                )}
+                <div className="film-card-overlay"><span className="film-card-arrow">↗</span></div>
+              </div>
+              <div className="film-card-info">
+                <div className="film-card-cat">{p.category}</div>
+                <div className="film-card-title">{p.title}</div>
               </div>
             </Link>
           ))}

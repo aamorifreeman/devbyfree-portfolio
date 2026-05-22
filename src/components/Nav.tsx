@@ -1,23 +1,25 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-
-const links = [
-  { href: '#about',    label: 'About' },
-  { href: '#work',     label: 'Work' },
-  { href: '#visuals',  label: 'Visuals' },
-  { href: '#graphics', label: 'Graphics' },
-  { href: '#contact',  label: 'Contact' },
-];
+import { usePathname } from 'next/navigation';
+import { navLinks } from '@/lib/site';
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
-    let last = 0;
     const nav = navRef.current;
     if (!nav) return;
+
+    nav.style.transform = 'translateY(0)';
+
+    if (pathname !== '/') {
+      return;
+    }
+
+    let last = 0;
     nav.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 
     const onScroll = () => {
@@ -27,20 +29,24 @@ export default function Nav() {
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
   }, [open]);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   const close = () => setOpen(false);
 
   return (
     <>
-      <nav ref={navRef}>
+      <nav ref={navRef} className="site-nav">
         <Link href="/" className="nav-logo">[ DBF ]</Link>
         <div className="nav-right">
-          <Link href="#contact" className="nav-cta">
+          <Link href="/contact" className="nav-cta">
             <span className="arrow">→</span> Let&apos;s work
           </Link>
           <button
@@ -55,9 +61,15 @@ export default function Nav() {
 
       <div className={`menu-overlay${open ? ' open' : ''}`} role="dialog" aria-label="Navigation menu">
         <ul className="menu-links">
-          {links.map(({ href, label }) => (
+          {navLinks.map(({ href, label }) => (
             <li key={label}>
-              <a href={href} onClick={close}>{label}</a>
+              <Link
+                href={href}
+                className={pathname === href ? 'active' : undefined}
+                onClick={close}
+              >
+                {label}
+              </Link>
             </li>
           ))}
         </ul>

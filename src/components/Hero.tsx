@@ -1,7 +1,11 @@
 'use client';
 import { motion } from 'framer-motion';
 
-export default function Hero() {
+type Props = {
+  showScroll?: boolean;
+};
+
+export default function Hero({ showScroll = false }: Props) {
   return (
     <section id="hero">
       <video
@@ -42,10 +46,12 @@ export default function Hero() {
           <div className="hero-name">Aamori Freeman</div>
           <div className="hero-role">Motion Designer &amp; Creative Technologist</div>
         </div>
-        <div className="hero-scroll">
-          <span>Scroll</span>
-          <div className="scroll-line" />
-        </div>
+        {showScroll && (
+          <a href="#about" className="hero-scroll">
+            <span>Scroll</span>
+            <div className="scroll-line" />
+          </a>
+        )}
       </motion.div>
     </section>
   );

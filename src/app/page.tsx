@@ -1,26 +1,18 @@
 import Hero from '@/components/Hero';
 import Marquee from '@/components/Marquee';
 import About from '@/components/About';
-import Work from '@/components/Work';
-import Visuals from '@/components/Visuals';
-import Graphics from '@/components/Graphics';
-import Contact from '@/components/Contact';
+import WorkPreview from '@/components/WorkPreview';
 import Footer from '@/components/Footer';
-
-const skills   = ['Motion Design', 'Real-Time Visuals', 'Concert Art', 'Graphic Design', 'Audio Reactive', 'Editorial', 'Creative Technology'];
-const identity = ['Howard University', 'Washington D.C.', 'Dev By Free', 'Mori'];
+import { identity, skills } from '@/lib/site';
 
 export default function Home() {
   return (
-    <main>
-      <Hero />
+    <main className="home">
+      <Hero showScroll />
       <Marquee items={skills} />
-      <About />
+      <About preview />
       <Marquee items={identity} reverse />
-      <Work />
-      <Visuals />
-      <Graphics />
-      <Contact />
+      <WorkPreview />
       <Footer />
     </main>
   );

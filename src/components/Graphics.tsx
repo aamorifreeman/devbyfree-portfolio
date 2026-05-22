@@ -4,7 +4,7 @@ import Reveal from './Reveal';
 const posters = [
   { src: '/media/2.png',                   label: 'Cluttered Creations — Cover I' },
   { src: '/media/3.png',                   label: 'Cluttered Creations — Visual Story' },
-  { src: '/media/TasteHoward.png',         label: 'Taste of Howard' },
+  { src: '/media/TasteHoward.png',         label: 'Taste of Howard — Poster' },
   { src: '/media/bisonweek_events.png',    label: 'Bison Stream' },
   { src: '/media/anothavers copy.png',     label: 'HUSA — PR Department' },
   { src: '/media/Untitled-4_01.jpg',       label: 'HUS Magazine — Cover I' },
@@ -33,7 +33,7 @@ export default function Graphics() {
         <div className="graphics-grid">
           {posters.map(p => (
             <div key={p.src} className="graphic-card">
-              <Image src={p.src} alt={p.label} fill style={{ objectFit: 'cover' }} />
+              <Image src={p.src} alt={p.label} width={1080} height={1350} style={{ width: '100%', height: 'auto', display: 'block' }} />
               <div className="graphic-card-label"><span>{p.label}</span></div>
             </div>
           ))}
@@ -45,7 +45,7 @@ export default function Graphics() {
         <div className="shoots-strip">
           {shoots.map(s => (
             <div key={s.src} className="shoot-item">
-              <Image src={s.src} alt={s.label} fill style={{ objectFit: 'cover' }} />
+              <Image src={s.src} alt={s.label} fill style={{ objectFit: 'contain' }} />
             </div>
           ))}
         </div>

@@ -15,11 +15,12 @@ export type Project = {
   heroType: 'video' | 'image';
   poster?: string;
   gallery: GalleryItem[];
+  headerCarousel?: GalleryItem[];
   featured: boolean;
 };
 
 const projects: Project[] = [
-  // ── 8 featured projects (from Drive folders) ──────────────────
+  // ── Featured / selected work ────────────────────────────────────
   {
     slug: 'husa-cabinet-shoot',
     title: 'HUSA Cabinet Shoot',
@@ -50,22 +51,6 @@ const projects: Project[] = [
       { src: '/media/TEN05646.JPG', type: 'image', caption: 'Cluttered Creations — Editorial Portrait' },
       { src: '/media/Artboard 1.png', type: 'image', caption: 'Composite Cover' },
       { src: '/media/3.png', type: 'image', caption: 'Cluttered Creation — A Visual Story' },
-    ],
-    featured: true,
-  },
-  {
-    slug: 'sincerely-20',
-    title: 'Sincerely 20',
-    category: 'Art Direction / Studio Shoot',
-    year: '2024',
-    description:
-      'A self-directed studio shoot exploring softness, intimacy, and identity at 20. Shot against a silk satin canvas, the series plays with light, texture, and quiet vulnerability — a letter to the self through imagery.',
-    tags: ['Photography', 'Art Direction', 'Studio', 'Self-Portrait'],
-    heroMedia: '/media/main.png',
-    heroType: 'image',
-    gallery: [
-      { src: '/media/DSCF2949.png', type: 'image', caption: 'Sincerely 20 — I' },
-      { src: '/media/DSCF2988.png', type: 'image', caption: 'Sincerely 20 — II' },
     ],
     featured: true,
   },
@@ -122,9 +107,7 @@ const projects: Project[] = [
     tags: ['After Effects', 'Premiere Pro', 'Event Design', '3D Typography'],
     heroMedia: '/media/doneskiii.mp4',
     heroType: 'video',
-    gallery: [
-      { src: '/media/TasteHoward.png', type: 'image', caption: 'Taste of Howard — Poster' },
-    ],
+    gallery: [],
     featured: true,
   },
   {
@@ -137,14 +120,31 @@ const projects: Project[] = [
     tags: ['TouchDesigner', 'Audio Reactive', 'Real-Time Visuals', 'Experimental'],
     heroMedia: '/media/neurosis-final.mp4',
     heroType: 'video',
-    gallery: [
-      { src: '/media/water2.mp4', type: 'video', caption: 'Water — fluid simulation' },
-      { src: '/media/2.mp4',      type: 'video', caption: 'Neurosis — alternate loop' },
+    gallery: [],
+    headerCarousel: [
+      { src: '/media/water2.mp4', type: 'video' },
+      { src: '/media/2.mp4', type: 'video' },
     ],
     featured: true,
   },
 
   // ── Archive (non-featured, referenced in old graphics/visuals sections) ───
+  {
+    slug: 'sincerely-20',
+    title: 'Sincerely 20',
+    category: 'Art Direction / Studio Shoot',
+    year: '2024',
+    description:
+      'A self-directed studio shoot exploring softness, intimacy, and identity at 20. Shot against a silk satin canvas, the series plays with light, texture, and quiet vulnerability — a letter to the self through imagery.',
+    tags: ['Photography', 'Art Direction', 'Studio', 'Self-Portrait'],
+    heroMedia: '/media/DSCF2949.png',
+    heroType: 'image',
+    gallery: [
+      { src: '/media/main.png', type: 'image', caption: 'Sincerely 20 — I' },
+      { src: '/media/DSCF2988.png', type: 'image', caption: 'Sincerely 20 — II' },
+    ],
+    featured: false,
+  },
   {
     slug: 'humble',
     title: 'Humble',
@@ -222,4 +222,31 @@ export function getProjectBySlug(slug: string): Project | undefined {
 
 export function getFeaturedProjects(): Project[] {
   return projects.filter((p) => p.featured);
+}
+
+export type CarouselMedia = {
+  src: string;
+  type: 'video' | 'image';
+  poster?: string;
+};
+
+export function getProjectCarouselMedia(project: Project): CarouselMedia[] {
+  const media: CarouselMedia[] = [];
+  if (project.heroType === 'image') {
+    media.push({ src: project.heroMedia, type: 'image' });
+  } else {
+    media.push({ src: project.heroMedia, type: 'video', poster: project.poster });
+  }
+  for (const item of project.gallery) {
+    media.push({ src: item.src, type: item.type });
+  }
+  for (const item of project.headerCarousel ?? []) {
+    media.push({ src: item.src, type: item.type });
+  }
+  const seen = new Set<string>();
+  return media.filter((m) => {
+    if (seen.has(m.src)) return false;
+    seen.add(m.src);
+    return true;
+  });
 }

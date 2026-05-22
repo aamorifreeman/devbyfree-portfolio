@@ -2,18 +2,15 @@
 import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import Reveal from './Reveal';
 import projects from '@/data/projects';
 
-export default function Work() {
+export default function WorkPreview() {
   const stripRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
-
-  const featured = projects.filter(p => p.featured);
-  const indexed = featured;
+  const featured = projects.filter((p) => p.featured);
 
   const onMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
@@ -33,15 +30,15 @@ export default function Work() {
   };
 
   return (
-    <section id="work">
+    <section id="work" className="work-preview">
       <div className="section-header">
         <div>
           <div className="section-number t-label">[ 01 ] — Selected work</div>
           <Reveal><h2 className="section-title t-display">PROJECTS</h2></Reveal>
         </div>
+        <Link href="/work" className="view-all-link">View all work →</Link>
       </div>
 
-      {/* Film strip */}
       <div
         className="film-strip"
         ref={stripRef}
@@ -50,8 +47,13 @@ export default function Work() {
         onMouseLeave={onMouseUp}
         onMouseMove={onMouseMove}
       >
-        {featured.map((project, i) => (
-          <Link href={`/projects/${project.slug}`} key={project.slug} className="film-card" style={{ textDecoration: 'none' }}>
+        {featured.map((project) => (
+          <Link
+            href={`/projects/${project.slug}`}
+            key={project.slug}
+            className="film-card"
+            style={{ textDecoration: 'none' }}
+          >
             <div className="film-card-media">
               {project.heroType === 'video' ? (
                 <video
@@ -61,8 +63,12 @@ export default function Work() {
                   playsInline
                   preload="none"
                   poster={project.poster}
-                  onMouseEnter={e => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
-                  onMouseLeave={e => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
+                  onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
+                  onMouseLeave={(e) => {
+                    const v = e.currentTarget as HTMLVideoElement;
+                    v.pause();
+                    v.currentTime = 0;
+                  }}
                 />
               ) : (
                 <Image src={project.heroMedia} alt={project.title} fill style={{ objectFit: 'contain' }} />
@@ -76,20 +82,6 @@ export default function Work() {
               <div className="film-card-title">{project.title}</div>
             </div>
           </Link>
-        ))}
-      </div>
-
-      {/* Project index */}
-      <div className="project-index">
-        {indexed.map((project, i) => (
-          <Reveal key={project.slug} delay={i * 0.05}>
-            <Link href={`/projects/${project.slug}`} className="project-row" style={{ textDecoration: 'none', display: 'grid' }}>
-              <span className="project-row-num">0{i + 1}</span>
-              <span className="project-row-title">{project.title}</span>
-              <span className="project-row-cat">{project.category}</span>
-              <span className="project-row-arrow">→</span>
-            </Link>
-          </Reveal>
         ))}
       </div>
     </section>

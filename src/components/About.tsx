@@ -1,9 +1,14 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import Reveal from './Reveal';
 
-export default function About() {
+type Props = {
+  preview?: boolean;
+};
+
+export default function About({ preview = false }: Props) {
   return (
-    <section id="about">
+    <section id="about" className={preview ? 'about-preview' : undefined}>
       <div className="about-grid">
         <Reveal>
           <div className="about-stacked-text">
@@ -23,7 +28,7 @@ export default function About() {
                 src="/media/DSCF2949.png"
                 alt="Aamori Freeman"
                 fill
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'contain' }}
               />
             </div>
           </Reveal>
@@ -42,6 +47,9 @@ export default function About() {
                   <span key={t} className="about-tag">{t}</span>
                 ))}
               </div>
+              {preview && (
+                <Link href="/about" className="section-cta-link">More about →</Link>
+              )}
             </div>
           </Reveal>
         </div>
