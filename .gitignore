@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (real env stays out; the example template is committed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -40,6 +41,33 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# media assets (large binaries — deploy via Vercel or host separately)
-/public/media/
+# Large binary source files — never commit (After Effects, PSD, raw exports)
 /public/devbyfree/
+
+# Videos: ignore all by default, then commit ONLY the ones referenced in code
+# (keeps unused clips out). Served by Vercel from /public/media. Images are committed too.
+/public/media/*.mp4
+/public/media/*.mov
+!/public/media/2.mp4
+!/public/media/ABOUT.mp4
+!/public/media/All Comp_2.mp4
+!/public/media/asap edit.mp4
+!/public/media/BLK.mp4
+!/public/media/burnlogo.mp4
+!/public/media/DAY-final.mp4
+!/public/media/DEVBYMORIVID.mp4
+!/public/media/doneskiii.mp4
+!/public/media/DREWSTROLLDONE.mp4
+!/public/media/ectasyy2.0.mp4
+!/public/media/erotica3.0.mp4
+!/public/media/excessus2.0_1.mp4
+!/public/media/FINALFINALIINSTA.mp4
+!/public/media/FINALVID.mp4
+!/public/media/gold_chain_new.mp4
+!/public/media/MAIN_4.mp4
+!/public/media/mona.mp4
+!/public/media/morph_black_fixed.mp4
+!/public/media/neurosis-final.mp4
+!/public/media/NIGHT-FINAL.mp4
+!/public/media/samivid.mp4
+!/public/media/water2.mp4

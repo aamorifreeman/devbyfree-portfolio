@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function VisualsPage() {
   return (
-    <main>
+    <main className="page-visuals">
       <Visuals />
       <Footer />
     </main>

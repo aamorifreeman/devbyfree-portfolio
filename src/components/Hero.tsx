@@ -1,5 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
+import { videoSrc } from '@/lib/media';
 
 type Props = {
   showScroll?: boolean;
@@ -14,7 +15,7 @@ export default function Hero({ showScroll = false }: Props) {
         muted
         loop
         playsInline
-        src="/media/DEVBYMORIVID.mp4"
+        src={videoSrc('/media/DEVBYMORIVID.mp4')}
       />
 
       <div className="hero-headline t-display">

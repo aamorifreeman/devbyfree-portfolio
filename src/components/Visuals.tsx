@@ -1,94 +1,161 @@
 'use client';
+
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Reveal from './Reveal';
+import { getVisualSections, type VisualProject } from '@/data/visuals';
+import { videoSrc } from '@/lib/media';
 
-type GridItem = {
-  src: string;
-  type: 'video' | 'image';
-  label: string;
-  className: string;
-};
+const LONG_VIDEO_SECONDS = 10;
 
-const items: GridItem[] = [
-  // Featured — full width
-  { src: '/media/neurosis-final.mp4',          type: 'video', label: 'Neurosis — Experimental Visualizer',  className: 'vis-item wide' },
-  // Row 1
-  { src: '/media/FINALVID.mp4',                type: 'video', label: 'FPSD — Motion Graphics',              className: 'vis-item' },
-  { src: '/media/doneskiii.mp4',               type: 'video', label: 'Taste of Howard — Promo',             className: 'vis-item' },
-  // Row 2
-  { src: '/media/BLK.mp4',                     type: 'video', label: 'FPSD — Dark Edit',                   className: 'vis-item' },
-  { src: '/media/water2.mp4',                  type: 'video', label: 'Neurosis — Water Simulation',        className: 'vis-item' },
-  // Row 3
-  { src: '/media/NIGHT-FINAL.mp4',             type: 'video', label: 'Night — Motion Graphics',            className: 'vis-item' },
-  { src: '/media/excessus2.0_1.mp4',           type: 'video', label: 'Excessus — Concert Art',             className: 'vis-item' },
-  // Featured — full width
-  { src: '/media/All Comp_2.mp4',              type: 'video', label: 'All Comp — Motion Reel',             className: 'vis-item wide' },
-  // Row 4
-  { src: '/media/MAIN_4.mp4',                  type: 'video', label: 'Main Comp',                          className: 'vis-item' },
-  { src: '/media/FINALCHRISELITE.mp4',         type: 'video', label: 'Chris Elite — Edit',                 className: 'vis-item' },
-  // Row 5
-  { src: '/media/DAY-final.mp4',               type: 'video', label: 'Day — Final',                        className: 'vis-item' },
-  { src: '/media/morph_black_fixed.mp4',       type: 'video', label: 'Morph — Dark Edit',                  className: 'vis-item' },
-  // Row 6
-  { src: '/media/Main_2.mp4',                  type: 'video', label: 'Main Edit II',                       className: 'vis-item' },
-  { src: '/media/mona.mp4',                    type: 'video', label: 'Mona Lisa — Edit',                   className: 'vis-item' },
-  // Row 7
-  { src: '/media/gold_chain_new.mp4',          type: 'video', label: 'Gold Chain',                         className: 'vis-item' },
-  { src: '/media/DREWSTROLLDONE.mp4',          type: 'video', label: 'Drew Stroll — Done',                 className: 'vis-item' },
-  // Row 8
-  { src: '/media/burnlogo.mp4',                type: 'video', label: 'Burn Logo — Motion',                 className: 'vis-item' },
-  { src: '/media/FINALFINALIINSTA.mp4',        type: 'video', label: 'Final — Reel',                       className: 'vis-item' },
-  // Row 9
-  { src: '/media/erotica3.0.mp4',              type: 'video', label: 'Erotica 3.0',                        className: 'vis-item' },
-  { src: '/media/ectasyy2.0.mp4',              type: 'video', label: 'Ecstasy 2.0',                        className: 'vis-item' },
-  // Row 10
-  { src: '/media/samivid.mp4',                 type: 'video', label: 'Sami — Video',                       className: 'vis-item' },
-  { src: '/media/gif_version.gif',             type: 'image', label: 'GIF Visualizer',                     className: 'vis-item' },
-  // Featured — full width
-  { src: '/media/highest in the room edit.mp4', type: 'video', label: 'Highest in the Room — Edit',        className: 'vis-item wide' },
-  // Row 11
-  { src: '/media/asap edit.mp4',               type: 'video', label: 'ASAP — Edit',                        className: 'vis-item' },
-  { src: '/media/DEVBYMORIVID.mp4',            type: 'video', label: 'Dev By Free — Reel',                 className: 'vis-item' },
-];
+type MediaOrientation = 'landscape' | 'portrait' | 'square';
+
+function orientationFromDimensions(width: number, height: number): MediaOrientation {
+  const ratio = width / height;
+  if (ratio > 1.05) return 'landscape';
+  if (ratio < 0.95) return 'portrait';
+  return 'square';
+}
+
+function VisualCard({ project }: { project: VisualProject }) {
+  const itemRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hovering, setHovering] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [orientation, setOrientation] = useState<MediaOrientation>(
+    project.orientation ?? 'landscape'
+  );
+  const showControls = hovering && duration > LONG_VIDEO_SECONDS;
+
+  const handleHoverEnter = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const long =
+      Number.isFinite(video.duration) && video.duration > LONG_VIDEO_SECONDS;
+    setHovering(true);
+    video.currentTime = 0;
+    video.loop = !long;
+    video.play().catch(() => {});
+  };
+
+  const handleHoverLeave = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    setHovering(false);
+    video.loop = true;
+    video.play().catch(() => {});
+  };
+
+  useEffect(() => {
+    if (project.mediaType !== 'video') return;
+    const el = itemRef.current;
+    const video = videoRef.current;
+    if (!el || !video) return;
+
+    const onMeta = () => {
+      const { videoWidth: w, videoHeight: h, duration: d } = video;
+      if (w > 0 && h > 0) setOrientation(orientationFromDimensions(w, h));
+      if (Number.isFinite(d) && d > 0) setDuration(d);
+    };
+
+    video.addEventListener('loadedmetadata', onMeta, { once: true });
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (hovering) return;
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.2, rootMargin: '80px 0px' }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [project.mediaType, hovering]);
+
+  return (
+    <article
+      ref={itemRef}
+      className={`vis-card vis-card--${orientation}${hovering ? ' is-hovering' : ''}${showControls ? ' has-controls' : ''}`}
+      onMouseEnter={project.mediaType === 'video' ? handleHoverEnter : undefined}
+      onMouseLeave={project.mediaType === 'video' ? handleHoverLeave : undefined}
+    >
+      <div className="vis-card-media">
+        {project.mediaType === 'video' ? (
+          <video
+            ref={videoRef}
+            src={videoSrc(project.src)}
+            muted
+            loop={!showControls}
+            playsInline
+            preload="metadata"
+            controls={showControls}
+            className="vis-card-video"
+          />
+        ) : (
+          <Image
+            src={project.src}
+            alt={project.title}
+            fill
+            className="vis-card-img"
+            sizes="(max-width: 640px) 50vw, 33vw"
+            unoptimized
+            onLoad={(e) => {
+              const img = e.currentTarget;
+              if (img.naturalWidth && img.naturalHeight) {
+                setOrientation(
+                  orientationFromDimensions(img.naturalWidth, img.naturalHeight)
+                );
+              }
+            }}
+          />
+        )}
+        <div className="vis-card-overlay" aria-hidden />
+        <p className="vis-card-title">{project.title}</p>
+      </div>
+    </article>
+  );
+}
 
 export default function Visuals() {
-  return (
-    <section id="visuals">
-      <div className="section-header">
-        <div>
-          <div className="section-number t-label">[ 02 ] — Motion &amp; video</div>
-          <Reveal><h2 className="section-title t-display">VISUALS</h2></Reveal>
-        </div>
-      </div>
+  const sections = getVisualSections();
 
-      <Reveal>
-        <div className="visuals-grid">
-          {items.map((item, i) => (
-            <div key={i} className={item.className}>
-              {item.type === 'video' ? (
-                <video
-                  src={item.src}
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  onMouseEnter={e => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
-                  onMouseLeave={e => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
-                />
-              ) : (
-                <Image
-                  src={item.src}
-                  alt={item.label}
-                  fill
-                  style={{ objectFit: 'contain' }}
-                  unoptimized
-                />
-              )}
-              <div className="vis-item-label">{item.label}</div>
+  return (
+    <section id="visuals" className="visuals-page">
+      <header className="visuals-page-header">
+        <div className="section-number t-label">[ 02 ] — Motion &amp; video</div>
+        <Reveal>
+          <h1 className="visuals-page-title t-display">Visuals</h1>
+        </Reveal>
+        <p className="visuals-page-lead">
+          Motion, concert art, and experimental work — organized by type.
+        </p>
+      </header>
+
+      <div className="visuals-catalog">
+        {sections.map((section, index) => (
+          <section
+            key={section.id}
+            className="visuals-category"
+            aria-labelledby={`visuals-cat-${section.id}`}
+          >
+            <h2 id={`visuals-cat-${section.id}`} className="visuals-category-label">
+              {section.label}
+            </h2>
+            <div className="visuals-grid">
+              {section.projects.map((project) => (
+                <VisualCard key={project.id} project={project} />
+              ))}
             </div>
-          ))}
-        </div>
-      </Reveal>
+            {index < sections.length - 1 ? (
+              <hr className="visuals-category-rule" aria-hidden />
+            ) : null}
+          </section>
+        ))}
+      </div>
     </section>
   );
 }

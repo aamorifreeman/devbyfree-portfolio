@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Reveal from './Reveal';
 import projects from '@/data/projects';
+import { videoSrc } from '@/lib/media';
 
 export default function WorkPreview() {
   const stripRef = useRef<HTMLDivElement>(null);
@@ -57,7 +58,7 @@ export default function WorkPreview() {
             <div className="film-card-media">
               {project.heroType === 'video' ? (
                 <video
-                  src={project.heroMedia}
+                  src={videoSrc(project.heroMedia)}
                   muted
                   loop
                   playsInline

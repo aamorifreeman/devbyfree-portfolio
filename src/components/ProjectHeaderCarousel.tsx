@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import type { CarouselMedia } from '@/data/projects';
+import { videoSrc } from '@/lib/media';
 
 type Props = {
   media: CarouselMedia[];
@@ -41,7 +42,7 @@ export default function ProjectHeaderCarousel({ media }: Props) {
           <div className="project-header-carousel-slide" key={`${item.src}-${i}`}>
             {item.type === 'video' ? (
               <video
-                src={item.src}
+                src={videoSrc(item.src)}
                 autoPlay
                 muted
                 loop

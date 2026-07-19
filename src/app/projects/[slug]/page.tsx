@@ -6,6 +6,7 @@ import Marquee from '@/components/Marquee';
 import Footer from '@/components/Footer';
 import Reveal from '@/components/Reveal';
 import ProjectHeaderCarousel from '@/components/ProjectHeaderCarousel';
+import { videoSrc } from '@/lib/media';
 
 export function generateStaticParams() {
   return projects.map(p => ({ slug: p.slug }));
@@ -74,7 +75,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <div className={`project-gallery-item${project.gallery.length === 0 ? ' full' : ''}`}>
               {project.heroType === 'video' ? (
                 <video
-                  src={project.heroMedia}
+                  src={videoSrc(project.heroMedia)}
                   controls
                   autoPlay
                   muted
@@ -91,7 +92,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
               <div key={i} className="project-gallery-item">
                 {item.type === 'video' ? (
                   <video
-                    src={item.src}
+                    src={videoSrc(item.src)}
                     controls
                     autoPlay
                     muted
@@ -122,7 +123,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             >
               <div className="film-card-media">
                 {p.heroType === 'video' ? (
-                  <video src={p.heroMedia} muted playsInline preload="none" poster={p.poster} />
+                  <video src={videoSrc(p.heroMedia)} muted playsInline preload="none" poster={p.poster} />
                 ) : (
                   <Image src={p.heroMedia} alt={p.title} fill style={{ objectFit: 'contain' }} />
                 )}
